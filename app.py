@@ -3,14 +3,24 @@ from bs4 import BeautifulSoup
 
 response = requests.get('https://animesonline.cc/animes-mais-vistos/')
 
+data = []
+
 content = response.content
 
 site = BeautifulSoup(content, 'html.parser')
 
-post = site.find('div', attrs={'class': 'wp-content'})
+wp_content = site.find('div', attrs={'class': 'wp-content'})
 
-data_title = post.find('div', attrs={'class': 'data'})
+archive_contents = wp_content.findAll('div', attrs={'id': 'archive-content'})
 
-title = data_title.find('a')
+for archive_content in archive_contents:
+    data_anime = archive_content.find('div', attrs={'class': 'poster'})
 
-print('Titulo do anime: ', title.text)
+    info_anime = data_anime.find('img')
+
+    data.append({
+        'titulo': info_anime['alt'],
+        'image_capa': info_anime['src'],
+    })
+
+print(data)
